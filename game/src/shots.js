@@ -40,6 +40,7 @@ export function applyShot(name, game) {
     guards[2].y = 8 * TILE + 32;
     guards[2].dir = Math.PI / 2;
     game.time = 47;
+    game.maxSuspicion = 42;
     return;
   }
   if (name === 'alarm') {
@@ -63,6 +64,7 @@ export function applyShot(name, game) {
     game.alarmFlash = 1;
     game.alarms = 1;
     game.time = 96;
+    game.maxSuspicion = 100;
     return;
   }
   if (name === 'end') {

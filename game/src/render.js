@@ -212,7 +212,7 @@ function drawHUD(ctx, game) {
   const gemsGot = game.world.gems.filter((g) => g.taken).length;
   ctx.fillText(`◆ ${gemsGot}/3`, 14, 18);
   ctx.fillText(`● ${game.player.coinsLeft} coins`, 110, 18);
-  ctx.fillText(`♥ ${'♥'.repeat(game.lives)}`, 230, 18);
+  ctx.fillText(`${'♥'.repeat(game.lives)}`, 230, 18);
   const mm = String(Math.floor(game.time / 60)).padStart(2, '0');
   const ss = String(Math.floor(game.time % 60)).padStart(2, '0');
   ctx.fillText(`${mm}:${ss}`, 330, 18);
@@ -235,9 +235,9 @@ function drawHUD(ctx, game) {
   ctx.restore();
 }
 
-function overlay(ctx, title, lines, accent) {
+function overlay(ctx, title, lines, accent, alpha = 0.78) {
   ctx.save();
-  ctx.fillStyle = 'rgba(5, 7, 12, 0.78)';
+  ctx.fillStyle = `rgba(5, 7, 12, ${alpha})`;
   ctx.fillRect(0, 0, W, H);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -250,7 +250,7 @@ function overlay(ctx, title, lines, accent) {
   ctx.restore();
 }
 
-export function drawWorld(ctx, game) {
+export function drawWorld(ctx, game, withLight = true) {
   const { world, guards, player, t } = game;
   drawFloor(ctx, world);
   drawExit(ctx, world, t);
@@ -261,13 +261,15 @@ export function drawWorld(ctx, game) {
   drawCoins(ctx, player.coinsThrown);
   for (const g of guards) drawGuard(ctx, g);
   drawPlayer(ctx, player, t);
-  drawLighting(ctx, player);
+  if (withLight) drawLighting(ctx, player);
 }
 
 export function draw(ctx, game) {
   ctx.clearRect(0, 0, W, H);
   if (game.screen === 'title') {
-    drawWorld(ctx, game);
+    // No night-lighting on the title: the cover must show the whole level
+    // at a glance, with a lighter veil so the text still reads.
+    drawWorld(ctx, game, false);
     overlay(ctx, 'THE QUIET GALLERY', [
       'A museum heist at night. Cross the gallery unseen,',
       'take the gems, reach the green EXIT.',
@@ -278,7 +280,7 @@ export function draw(ctx, game) {
       'Seen too long and the alarm sounds — break line of sight to recover.',
       '',
       'Click or press Enter to begin',
-    ]);
+    ], undefined, 0.55);
     return;
   }
   drawWorld(ctx, game);
